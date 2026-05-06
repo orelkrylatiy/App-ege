@@ -1,5 +1,7 @@
 <!-- ci-comment-id:review_tags -->
 
+<!-- ai-pr-description:start -->
+
 ## What was done
 
 <!-- Briefly describe the change -->
@@ -23,6 +25,8 @@
 ## Screenshots / Demo
 
 <!-- Add screenshots or short video if UI changed -->
+
+<!-- ai-pr-description:end -->
 
 ## Checklist
 
