@@ -1,9 +1,10 @@
-import "./App.module.css";
+import './App.module.css'
 
 function App() {
-  const a = 4;
-  console.log(a);
-  return <></>;
+  return (
+    <>
+    </>
+  )
 }
 
-export default App;
+export default App
