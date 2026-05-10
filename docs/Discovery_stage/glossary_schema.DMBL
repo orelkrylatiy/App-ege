@@ -1,0 +1,104 @@
+// ============ ENUMS ============
+
+Enum assignment_status {
+  IN_PROGRESS
+  UNDER_REVIEW
+  DONE
+}
+
+Enum invite_status {
+  ACTIVE
+  USED
+  EXPIRED
+}
+
+Enum user_role {
+  tutor
+  student
+}
+
+// ============ TABLES ============
+
+Table tutors {
+  id varchar [primary key]
+  email varchar [unique, not null]
+  password_hash varchar [not null]
+  first_name varchar [not null]
+  last_name varchar [not null]
+  middle_name varchar
+  bio text
+  created_at timestamp [not null]
+}
+
+Table students {
+  id varchar [primary key]
+  email varchar [unique, not null]
+  password_hash varchar [not null]
+  first_name varchar [not null]
+  last_name varchar [not null]
+  middle_name varchar
+  grade int [not null]
+  exam_subject varchar [not null]
+  contact varchar
+  notes text
+  tutor_id varchar [not null]
+  created_at timestamp [not null]
+}
+
+Table assignments {
+  id varchar [primary key]
+  title varchar [not null]
+  description text [not null]
+  deadline timestamp [not null]
+  status assignment_status [not null]
+  tutor_id varchar [not null]
+  student_id varchar [not null]
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+}
+
+Table submissions {
+  id varchar [primary key]
+  text text
+  assignment_id varchar [unique, not null]
+  created_at timestamp [not null]
+}
+
+Table invites {
+  id varchar [primary key]
+  token varchar [unique, not null]
+  status invite_status [not null]
+  tutor_id varchar [not null]
+  student_id varchar
+  expires_at timestamp [not null]
+  used_at timestamp
+  created_at timestamp [not null]
+}
+
+Table files {
+  id varchar [primary key]
+  file_name varchar [not null]
+  file_size int [not null]
+  mime_type varchar [not null]
+  url varchar [not null]
+  assignment_id varchar
+  submission_id varchar
+  uploaded_by_id varchar [not null]
+  uploaded_by_role user_role [not null]
+  created_at timestamp [not null]
+}
+
+// ============ REFS ============
+
+Ref: students.tutor_id > tutors.id
+
+Ref: assignments.tutor_id > tutors.id
+Ref: assignments.student_id > students.id
+
+Ref: submissions.assignment_id - assignments.id
+
+Ref: invites.tutor_id > tutors.id
+Ref: invites.student_id - students.id
+
+Ref: files.assignment_id > assignments.id
+Ref: files.submission_id > submissions.id

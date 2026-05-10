@@ -1,0 +1,1559 @@
+openapi: 3.0.3
+info:
+  title: BrainWave API
+  version: 1.0.0
+  description: |
+    OpenAPI specification for the BrainWave tutor/student application.
+
+    The API uses JSON by default. File upload uses multipart/form-data.
+    Protected endpoints use an httpOnly session cookie on the backend implementation level.
+servers:
+  - url: http://localhost:3000
+    description: Local development server
+  - url: https://app.example.com
+    description: Production placeholder
+
+tags:
+  - name: Auth
+    description: Registration, login, logout and session endpoints
+  - name: Profile
+    description: Current user profile endpoints
+  - name: Students
+    description: Tutor student management
+  - name: Invites
+    description: Student invite links
+  - name: Assignments
+    description: Homework assignments
+  - name: Submissions
+    description: Student homework submissions
+  - name: Files
+    description: File upload and deletion
+
+paths:
+  /api/auth/register-tutor:
+    post:
+      tags: [Auth]
+      summary: Register tutor
+      operationId: registerTutor
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterTutorRequest'
+            example:
+              email: tutor@example.com
+              password: securePassword123
+              first_name: Пётр
+              last_name: Сидоров
+      responses:
+        '201':
+          description: Tutor registered and session created
+          headers:
+            Set-Cookie:
+              description: Session cookie set by backend implementation
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/auth/register-student:
+    post:
+      tags: [Auth]
+      summary: Register student by invite token
+      operationId: registerStudent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterStudentRequest'
+            example:
+              token: abc123def456
+              email: student@example.com
+              password: securePassword123
+      responses:
+        '201':
+          description: Student registered and linked to existing student card
+          headers:
+            Set-Cookie:
+              description: Session cookie set by backend implementation
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/auth/login:
+    post:
+      tags: [Auth]
+      summary: Login
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+            example:
+              email: user@example.com
+              password: securePassword123
+      responses:
+        '200':
+          description: User logged in and session created
+          headers:
+            Set-Cookie:
+              description: Session cookie set by backend implementation
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/auth/logout:
+    post:
+      tags: [Auth]
+      summary: Logout
+      operationId: logout
+      security:
+        - sessionCookie: []
+      responses:
+        '204':
+          description: User logged out, session invalidated, cookie cleared
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/auth/me:
+    get:
+      tags: [Auth]
+      summary: Get current user
+      operationId: getCurrentUser
+      security:
+        - sessionCookie: []
+      responses:
+        '200':
+          description: Current authenticated user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/auth/forgot-password:
+    post:
+      tags: [Auth]
+      summary: Request password reset
+      operationId: forgotPassword
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForgotPasswordRequest'
+            example:
+              email: user@example.com
+      responses:
+        '200':
+          description: Password reset request accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/auth/reset-password:
+    post:
+      tags: [Auth]
+      summary: Reset password by token
+      operationId: resetPassword
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordRequest'
+            example:
+              token: reset-token
+              password: newSecurePassword123
+      responses:
+        '200':
+          description: Password reset successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/profile:
+    get:
+      tags: [Profile]
+      summary: Get own profile
+      operationId: getProfile
+      security:
+        - sessionCookie: []
+      responses:
+        '200':
+          description: Current user profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    patch:
+      tags: [Profile]
+      summary: Update own profile
+      operationId: updateProfile
+      security:
+        - sessionCookie: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProfileRequest'
+            example:
+              first_name: Пётр
+              last_name: Иванов
+              avatar_url: https://storage.example.com/avatar.png
+      responses:
+        '200':
+          description: Updated profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/profile/change-password:
+    post:
+      tags: [Profile]
+      summary: Change password
+      operationId: changePassword
+      security:
+        - sessionCookie: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequest'
+            example:
+              current_password: oldPassword123
+              new_password: newSecurePassword123
+      responses:
+        '200':
+          description: Password changed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/students:
+    get:
+      tags: [Students]
+      summary: List tutor students
+      operationId: listStudents
+      security:
+        - sessionCookie: []
+      parameters:
+        - name: search
+          in: query
+          description: Search by first or last name
+          required: false
+          schema:
+            type: string
+        - name: subject
+          in: query
+          description: Filter by subject
+          required: false
+          schema:
+            type: string
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Paginated list of students owned by current tutor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStudentsResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      tags: [Students]
+      summary: Create student card
+      operationId: createStudent
+      security:
+        - sessionCookie: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateStudentRequest'
+            example:
+              first_name: Иван
+              last_name: Петров
+              class: 11
+              subject: Математика
+              contact: '+79001234567'
+              notes: Готовится к ЕГЭ
+      responses:
+        '201':
+          description: Student card created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Student'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/students/{id}:
+    get:
+      tags: [Students]
+      summary: Get student detail
+      operationId: getStudent
+      security:
+        - sessionCookie: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: Student detail with linked user and stats
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentDetail'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    patch:
+      tags: [Students]
+      summary: Update student card
+      operationId: updateStudent
+      security:
+        - sessionCookie: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateStudentRequest'
+            example:
+              first_name: Иван
+              last_name: Иванов
+              class: 10
+              subject: Информатика
+              contact: '+79001234567'
+              notes: Обновлённая заметка
+      responses:
+        '200':
+          description: Updated student card
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Student'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      tags: [Students]
+      summary: Delete student card
+      description: Cannot delete a student with active assignments.
+      operationId: deleteStudent
+      security:
+        - sessionCookie: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '204':
+          description: Student deleted
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/students/{id}/invite:
+    post:
+      tags: [Invites]
+      summary: Generate invite link for student
+      operationId: createStudentInvite
+      security:
+        - sessionCookie: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: Invite generated. Previous active invite is deactivated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invite'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/invites/{token}:
+    get:
+      tags: [Invites]
+      summary: Validate invite token
+      operationId: validateInvite
+      parameters:
+        - name: token
+          in: path
+          required: true
+          description: Invite token
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Invite is valid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InviteValidation'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/assignments:
+    get:
+      tags: [Assignments]
+      summary: List assignments
+      description: Tutor sees assignments of own students. Student sees only own assignments.
+      operationId: listAssignments
+      security:
+        - sessionCookie: []
+      parameters:
+        - name: student_id
+          in: query
+          required: false
+          description: Tutor-only filter by student id
+          schema:
+            type: string
+            format: uuid
+        - name: status
+          in: query
+          required: false
+          description: Comma-separated assignment statuses
+          schema:
+            type: string
+            example: IN_PROGRESS,UNDER_REVIEW
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Paginated list of assignments
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAssignmentsResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      tags: [Assignments]
+      summary: Create assignment
+      operationId: createAssignment
+      security:
+        - sessionCookie: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAssignmentRequest'
+            example:
+              student_id: 550e8400-e29b-41d4-a716-446655440000
+              title: Тригонометрия §15
+              description: Решить задачи 1-10. Прислать фото или текст.
+              deadline: '2024-03-20T23:59:00.000Z'
+              file_ids:
+                - 550e8400-e29b-41d4-a716-446655440001
+      responses:
+        '201':
+          description: Assignment created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssignmentDetail'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/assignments/{id}:
+    get:
+      tags: [Assignments]
+      summary: Get assignment detail
+      operationId: getAssignment
+      security:
+        - sessionCookie: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: Assignment detail with files and optional submission
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssignmentDetail'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    patch:
+      tags: [Assignments]
+      summary: Update assignment or change status
+      operationId: updateAssignment
+      security:
+        - sessionCookie: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAssignmentRequest'
+            example:
+              title: Новый заголовок
+              description: Новое описание
+              deadline: '2024-03-25T23:59:00.000Z'
+              status: DONE
+              review_comment: Принято, хорошая работа
+      responses:
+        '200':
+          description: Updated assignment detail
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssignmentDetail'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      tags: [Assignments]
+      summary: Delete assignment
+      operationId: deleteAssignment
+      security:
+        - sessionCookie: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '204':
+          description: Assignment deleted
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/assignments/{id}/submission:
+    post:
+      tags: [Submissions]
+      summary: Create assignment submission
+      description: Student submits an answer. Assignment status becomes UNDER_REVIEW.
+      operationId: createSubmission
+      security:
+        - sessionCookie: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSubmissionRequest'
+            example:
+              text: Мой ответ...
+              file_ids:
+                - 550e8400-e29b-41d4-a716-446655440001
+      responses:
+        '201':
+          description: Submission created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Submission'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/submissions/{id}:
+    patch:
+      tags: [Submissions]
+      summary: Update submission
+      description: Student can update own submission while assignment is IN_PROGRESS or UNDER_REVIEW.
+      operationId: updateSubmission
+      security:
+        - sessionCookie: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSubmissionRequest'
+            example:
+              text: Исправленный ответ
+              file_ids:
+                - 550e8400-e29b-41d4-a716-446655440001
+      responses:
+        '200':
+          description: Updated submission
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Submission'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/files:
+    post:
+      tags: [Files]
+      summary: Upload file
+      operationId: uploadFile
+      security:
+        - sessionCookie: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '201':
+          description: Uploaded file metadata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileItem'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/files/{id}:
+    delete:
+      tags: [Files]
+      summary: Delete file
+      description: Only file uploader can delete it. Linked-file behavior is implementation TODO.
+      operationId: deleteFile
+      security:
+        - sessionCookie: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '204':
+          description: File deleted
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  securitySchemes:
+    sessionCookie:
+      type: apiKey
+      in: cookie
+      name: session_id
+      description: httpOnly session cookie. Exact cookie name may change during backend implementation.
+
+  parameters:
+    IdParam:
+      name: id
+      in: path
+      required: true
+      description: Resource UUID
+      schema:
+        type: string
+        format: uuid
+    PageParam:
+      name: page
+      in: query
+      required: false
+      description: Page number
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    LimitParam:
+      name: limit
+      in: query
+      required: false
+      description: Page size
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+
+  responses:
+    BadRequest:
+      description: Invalid input data
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+          example:
+            error: VALIDATION_ERROR
+            message: Имя должно быть от 2 до 100 символов
+            details:
+              field: first_name
+    Unauthorized:
+      description: User is not authenticated
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+          example:
+            error: UNAUTHORIZED
+            message: Пользователь не залогинен
+    Forbidden:
+      description: User has no permission for this action
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+          example:
+            error: FORBIDDEN
+            message: Недостаточно прав
+    NotFound:
+      description: Resource not found or not available for current user
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+          example:
+            error: NOT_FOUND
+            message: Ресурс не найден
+    Conflict:
+      description: Business rule conflict
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+          example:
+            error: CONFLICT
+            message: Операция невозможна из-за бизнес-правил
+    PayloadTooLarge:
+      description: Uploaded file is too large
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+          example:
+            error: FILE_TOO_LARGE
+            message: Файл слишком большой
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+          example:
+            error: INTERNAL_SERVER_ERROR
+            message: Внутренняя ошибка сервера
+
+  schemas:
+    UUID:
+      type: string
+      format: uuid
+      example: 550e8400-e29b-41d4-a716-446655440000
+
+    ISODate:
+      type: string
+      format: date-time
+      example: '2024-03-15T10:00:00.000Z'
+
+    UserRole:
+      type: string
+      enum: [TUTOR, STUDENT]
+
+    AssignmentStatus:
+      type: string
+      enum: [IN_PROGRESS, UNDER_REVIEW, DONE]
+
+    ApiError:
+      type: object
+      required: [error, message]
+      properties:
+        error:
+          type: string
+          example: VALIDATION_ERROR
+        message:
+          type: string
+          example: Имя должно быть от 2 до 100 символов
+        details:
+          type: object
+          additionalProperties: true
+          nullable: true
+
+    SuccessResponse:
+      type: object
+      required: [success]
+      properties:
+        success:
+          type: boolean
+          example: true
+
+    PaginationMeta:
+      type: object
+      required: [page, limit, total, total_pages]
+      properties:
+        page:
+          type: integer
+          minimum: 1
+          example: 1
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+          example: 20
+        total:
+          type: integer
+          minimum: 0
+          example: 47
+        total_pages:
+          type: integer
+          minimum: 0
+          example: 3
+
+    User:
+      type: object
+      required: [id, email, role, first_name, last_name, avatar_url]
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        email:
+          type: string
+          format: email
+          example: user@example.com
+        role:
+          $ref: '#/components/schemas/UserRole'
+        first_name:
+          type: string
+          minLength: 2
+          maxLength: 50
+          example: Пётр
+        last_name:
+          type: string
+          minLength: 2
+          maxLength: 50
+          example: Сидоров
+        avatar_url:
+          type: string
+          format: uri
+          nullable: true
+          example: null
+
+    Profile:
+      allOf:
+        - $ref: '#/components/schemas/User'
+        - type: object
+          required: [created_at]
+          properties:
+            created_at:
+              $ref: '#/components/schemas/ISODate'
+
+    AuthResponse:
+      type: object
+      required: [user]
+      properties:
+        user:
+          $ref: '#/components/schemas/User'
+
+    RegisterTutorRequest:
+      type: object
+      required: [email, password, first_name, last_name]
+      properties:
+        email:
+          type: string
+          format: email
+          example: tutor@example.com
+        password:
+          type: string
+          minLength: 8
+          format: password
+          example: securePassword123
+        first_name:
+          type: string
+          minLength: 2
+          maxLength: 50
+          example: Пётр
+        last_name:
+          type: string
+          minLength: 2
+          maxLength: 50
+          example: Сидоров
+
+    RegisterStudentRequest:
+      type: object
+      required: [token, email, password]
+      properties:
+        token:
+          type: string
+          example: abc123def456
+        email:
+          type: string
+          format: email
+          example: student@example.com
+        password:
+          type: string
+          minLength: 8
+          format: password
+          example: securePassword123
+
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+          example: user@example.com
+        password:
+          type: string
+          minLength: 8
+          format: password
+          example: securePassword123
+
+    ForgotPasswordRequest:
+      type: object
+      required: [email]
+      properties:
+        email:
+          type: string
+          format: email
+          example: user@example.com
+
+    ResetPasswordRequest:
+      type: object
+      required: [token, password]
+      properties:
+        token:
+          type: string
+          example: reset-token
+        password:
+          type: string
+          minLength: 8
+          format: password
+          example: newSecurePassword123
+
+    UpdateProfileRequest:
+      type: object
+      properties:
+        first_name:
+          type: string
+          minLength: 2
+          maxLength: 50
+        last_name:
+          type: string
+          minLength: 2
+          maxLength: 50
+        avatar_url:
+          type: string
+          format: uri
+          nullable: true
+
+    ChangePasswordRequest:
+      type: object
+      required: [current_password, new_password]
+      properties:
+        current_password:
+          type: string
+          minLength: 8
+          format: password
+        new_password:
+          type: string
+          minLength: 8
+          format: password
+
+    Student:
+      type: object
+      required:
+        - id
+        - first_name
+        - last_name
+        - class
+        - subject
+        - contact
+        - notes
+        - is_registered
+        - active_assignments_count
+        - created_at
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        first_name:
+          type: string
+          minLength: 2
+          maxLength: 50
+          example: Иван
+        last_name:
+          type: string
+          minLength: 2
+          maxLength: 50
+          example: Петров
+        class:
+          type: integer
+          minimum: 1
+          maximum: 11
+          nullable: true
+          example: 11
+        subject:
+          type: string
+          minLength: 2
+          maxLength: 100
+          example: Математика
+        contact:
+          type: string
+          maxLength: 100
+          nullable: true
+          example: '+79001234567'
+        notes:
+          type: string
+          maxLength: 1000
+          nullable: true
+          example: Готовится к ЕГЭ
+        is_registered:
+          type: boolean
+          example: true
+        active_assignments_count:
+          type: integer
+          minimum: 0
+          example: 3
+        created_at:
+          $ref: '#/components/schemas/ISODate'
+
+    StudentDetail:
+      allOf:
+        - $ref: '#/components/schemas/Student'
+        - type: object
+          required: [user, stats]
+          properties:
+            user:
+              nullable: true
+              allOf:
+                - $ref: '#/components/schemas/StudentLinkedUser'
+            stats:
+              $ref: '#/components/schemas/StudentStats'
+
+    StudentLinkedUser:
+      type: object
+      required: [email, registered_at]
+      properties:
+        email:
+          type: string
+          format: email
+          example: student@example.com
+        registered_at:
+          $ref: '#/components/schemas/ISODate'
+
+    StudentStats:
+      type: object
+      required: [total_assignments, in_progress, under_review, done]
+      properties:
+        total_assignments:
+          type: integer
+          minimum: 0
+          example: 12
+        in_progress:
+          type: integer
+          minimum: 0
+          example: 3
+        under_review:
+          type: integer
+          minimum: 0
+          example: 1
+        done:
+          type: integer
+          minimum: 0
+          example: 8
+
+    CreateStudentRequest:
+      type: object
+      required: [first_name, last_name, subject]
+      properties:
+        first_name:
+          type: string
+          minLength: 2
+          maxLength: 50
+        last_name:
+          type: string
+          minLength: 2
+          maxLength: 50
+        class:
+          type: integer
+          minimum: 1
+          maximum: 11
+          nullable: true
+        subject:
+          type: string
+          minLength: 2
+          maxLength: 100
+        contact:
+          type: string
+          maxLength: 100
+          nullable: true
+        notes:
+          type: string
+          maxLength: 1000
+          nullable: true
+
+    UpdateStudentRequest:
+      type: object
+      properties:
+        first_name:
+          type: string
+          minLength: 2
+          maxLength: 50
+        last_name:
+          type: string
+          minLength: 2
+          maxLength: 50
+        class:
+          type: integer
+          minimum: 1
+          maximum: 11
+          nullable: true
+        subject:
+          type: string
+          minLength: 2
+          maxLength: 100
+        contact:
+          type: string
+          maxLength: 100
+          nullable: true
+        notes:
+          type: string
+          maxLength: 1000
+          nullable: true
+
+    StudentShort:
+      type: object
+      required: [id, first_name, last_name]
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        first_name:
+          type: string
+          example: Иван
+        last_name:
+          type: string
+          example: Петров
+
+    Invite:
+      type: object
+      required: [token, url, expires_at]
+      properties:
+        token:
+          type: string
+          example: abc123def456
+        url:
+          type: string
+          format: uri
+          example: https://app.example.com/invite/abc123def456
+        expires_at:
+          $ref: '#/components/schemas/ISODate'
+
+    InviteValidation:
+      type: object
+      required: [valid, student, tutor]
+      properties:
+        valid:
+          type: boolean
+          enum: [true]
+        student:
+          $ref: '#/components/schemas/PersonName'
+        tutor:
+          $ref: '#/components/schemas/PersonName'
+
+    PersonName:
+      type: object
+      required: [first_name, last_name]
+      properties:
+        first_name:
+          type: string
+          example: Иван
+        last_name:
+          type: string
+          example: Петров
+
+    FileItem:
+      type: object
+      required: [id, name, url, size, mime_type, uploaded_at]
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        name:
+          type: string
+          example: task.pdf
+        url:
+          type: string
+          format: uri
+          example: https://storage.example.com/task.pdf
+        size:
+          type: integer
+          minimum: 0
+          example: 102400
+        mime_type:
+          type: string
+          example: application/pdf
+        uploaded_at:
+          $ref: '#/components/schemas/ISODate'
+
+    Submission:
+      type: object
+      required:
+        - id
+        - assignment_id
+        - text
+        - files
+        - review_comment
+        - submitted_at
+        - updated_at
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        assignment_id:
+          $ref: '#/components/schemas/UUID'
+        text:
+          type: string
+          maxLength: 5000
+          example: Мой ответ...
+        files:
+          type: array
+          items:
+            $ref: '#/components/schemas/FileItem'
+        review_comment:
+          type: string
+          maxLength: 2000
+          nullable: true
+          example: null
+        submitted_at:
+          $ref: '#/components/schemas/ISODate'
+        updated_at:
+          $ref: '#/components/schemas/ISODate'
+
+    Assignment:
+      type: object
+      required:
+        - id
+        - title
+        - status
+        - deadline
+        - student
+        - has_submission
+        - created_at
+        - updated_at
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        title:
+          type: string
+          minLength: 3
+          maxLength: 200
+          example: Тригонометрия §15
+        status:
+          $ref: '#/components/schemas/AssignmentStatus'
+        deadline:
+          type: string
+          format: date-time
+          nullable: true
+          example: '2024-03-20T23:59:00.000Z'
+        student:
+          $ref: '#/components/schemas/StudentShort'
+        has_submission:
+          type: boolean
+          example: true
+        created_at:
+          $ref: '#/components/schemas/ISODate'
+        updated_at:
+          $ref: '#/components/schemas/ISODate'
+
+    AssignmentDetail:
+      type: object
+      required:
+        - id
+        - title
+        - description
+        - status
+        - deadline
+        - files
+        - student
+        - submission
+        - created_at
+        - updated_at
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        title:
+          type: string
+          minLength: 3
+          maxLength: 200
+          example: Тригонометрия §15
+        description:
+          type: string
+          maxLength: 5000
+          example: Решить задачи 1-10. Прислать фото или текст.
+        status:
+          $ref: '#/components/schemas/AssignmentStatus'
+        deadline:
+          type: string
+          format: date-time
+          nullable: true
+          example: '2024-03-20T23:59:00.000Z'
+        files:
+          type: array
+          items:
+            $ref: '#/components/schemas/FileItem'
+        student:
+          $ref: '#/components/schemas/StudentShort'
+        submission:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/Submission'
+        created_at:
+          $ref: '#/components/schemas/ISODate'
+        updated_at:
+          $ref: '#/components/schemas/ISODate'
+
+    CreateAssignmentRequest:
+      type: object
+      required: [student_id, title, description]
+      properties:
+        student_id:
+          type: string
+          format: uuid
+        title:
+          type: string
+          minLength: 3
+          maxLength: 200
+        description:
+          type: string
+          maxLength: 5000
+        deadline:
+          type: string
+          format: date-time
+          nullable: true
+        file_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+
+    UpdateAssignmentRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 3
+          maxLength: 200
+        description:
+          type: string
+          maxLength: 5000
+        deadline:
+          type: string
+          format: date-time
+          nullable: true
+        status:
+          $ref: '#/components/schemas/AssignmentStatus'
+        review_comment:
+          type: string
+          maxLength: 2000
+          nullable: true
+
+    CreateSubmissionRequest:
+      type: object
+      properties:
+        text:
+          type: string
+          maxLength: 5000
+        file_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+      description: text is required if file_ids is empty; file_ids is required if text is empty.
+
+    UpdateSubmissionRequest:
+      type: object
+      properties:
+        text:
+          type: string
+          maxLength: 5000
+        file_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+      description: Same validation as create submission.
+
+    PaginatedStudentsResponse:
+      type: object
+      required: [data, pagination]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Student'
+        pagination:
+          $ref: '#/components/schemas/PaginationMeta'
+
+    PaginatedAssignmentsResponse:
+      type: object
+      required: [data, pagination]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Assignment'
+        pagination:
+          $ref: '#/components/schemas/PaginationMeta'
