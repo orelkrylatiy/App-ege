@@ -1,4 +1,4 @@
-# _BrainWave_ 
+# _BrainWave_
 
 ### **Tutor-help platform**
 

@@ -95,29 +95,29 @@ Content-Type: application/json
 
 ### 2.6 Роли
 
-| Маркер | Роль | Описание |
-|---|---|---|
-| 🌐 | Public | Доступно без авторизации |
-| 🔒 | Auth | Любой залогиненный пользователь |
-| 👨‍🏫 | Tutor | Залогиненный репетитор |
-| 👨‍🎓 | Student | Залогиненный ученик |
+| Маркер | Роль    | Описание                        |
+| ------ | ------- | ------------------------------- |
+| 🌐     | Public  | Доступно без авторизации        |
+| 🔒     | Auth    | Любой залогиненный пользователь |
+| 👨‍🏫     | Tutor   | Залогиненный репетитор          |
+| 👨‍🎓     | Student | Залогиненный ученик             |
 
 ---
 
 ### 2.7 HTTP-статусы
 
-| Статус | Значение | Когда используем |
-|---|---|---|
-| `200` | OK | Успешный `GET` или `PATCH` |
-| `201` | Created | Ресурс создан через `POST` |
-| `204` | No Content | Успешное действие без тела ответа, например `DELETE` |
-| `400` | Bad Request | Невалидные входные данные |
-| `401` | Unauthorized | Пользователь не залогинен |
-| `403` | Forbidden | Пользователь залогинен, но не имеет прав |
-| `404` | Not Found | Ресурс не найден или недоступен текущему пользователю |
-| `409` | Conflict | Конфликт бизнес-правил |
-| `413` | Payload Too Large | Файл слишком большой |
-| `500` | Internal Server Error | Ошибка сервера |
+| Статус | Значение              | Когда используем                                      |
+| ------ | --------------------- | ----------------------------------------------------- |
+| `200`  | OK                    | Успешный `GET` или `PATCH`                            |
+| `201`  | Created               | Ресурс создан через `POST`                            |
+| `204`  | No Content            | Успешное действие без тела ответа, например `DELETE`  |
+| `400`  | Bad Request           | Невалидные входные данные                             |
+| `401`  | Unauthorized          | Пользователь не залогинен                             |
+| `403`  | Forbidden             | Пользователь залогинен, но не имеет прав              |
+| `404`  | Not Found             | Ресурс не найден или недоступен текущему пользователю |
+| `409`  | Conflict              | Конфликт бизнес-правил                                |
+| `413`  | Payload Too Large     | Файл слишком большой                                  |
+| `500`  | Internal Server Error | Ошибка сервера                                        |
 
 ---
 
@@ -153,10 +153,10 @@ Content-Type: application/json
 
 Для списков используем query-параметры:
 
-| Параметр | Описание | Default | Ограничение |
-|---|---|---:|---:|
-| `page` | Номер страницы | `1` | min `1` |
-| `limit` | Размер страницы | `20` | max `100` |
+| Параметр | Описание        | Default | Ограничение |
+| -------- | --------------- | ------: | ----------: |
+| `page`   | Номер страницы  |     `1` |     min `1` |
+| `limit`  | Размер страницы |    `20` |   max `100` |
 
 Пример:
 
@@ -182,51 +182,51 @@ GET /api/students?page=1&limit=20
 
 ## 3. Статусы домашних заданий
 
-| Статус | Значение | Кто обычно меняет |
-|---|---|---|
-| `IN_PROGRESS` | Задание выдано, ученик работает или задание возвращено на доработку | Tutor / system |
-| `UNDER_REVIEW` | Ученик отправил ответ, репетитор должен проверить | System after submission |
-| `DONE` | Репетитор принял задание | Tutor |
+| Статус         | Значение                                                            | Кто обычно меняет       |
+| -------------- | ------------------------------------------------------------------- | ----------------------- |
+| `IN_PROGRESS`  | Задание выдано, ученик работает или задание возвращено на доработку | Tutor / system          |
+| `UNDER_REVIEW` | Ученик отправил ответ, репетитор должен проверить                   | System after submission |
+| `DONE`         | Репетитор принял задание                                            | Tutor                   |
 
 ---
 
 ## 4. Общая таблица endpoints
 
-| # | Метод | URL | Роль | Описание |
-|---:|---|---|---|---|
-| **Auth** |||||
-| 1 | `POST` | `/api/auth/register-tutor` | 🌐 | Регистрация репетитора |
-| 2 | `POST` | `/api/auth/register-student` | 🌐 | Регистрация ученика по invite-токену |
-| 3 | `POST` | `/api/auth/login` | 🌐 | Вход |
-| 4 | `POST` | `/api/auth/logout` | 🔒 | Выход |
-| 5 | `GET` | `/api/auth/me` | 🔒 | Текущий пользователь |
-| 6 | `POST` | `/api/auth/forgot-password` | 🌐 | Запрос восстановления пароля |
-| 7 | `POST` | `/api/auth/reset-password` | 🌐 | Установка нового пароля |
-| **Profile** |||||
-| 8 | `GET` | `/api/profile` | 🔒 | Свой профиль |
-| 9 | `PATCH` | `/api/profile` | 🔒 | Обновить профиль |
-| 10 | `POST` | `/api/profile/change-password` | 🔒 | Сменить пароль |
-| **Students** |||||
-| 11 | `GET` | `/api/students` | 👨‍🏫 | Список своих учеников |
-| 12 | `POST` | `/api/students` | 👨‍🏫 | Создать ученика |
-| 13 | `GET` | `/api/students/:id` | 👨‍🏫 | Получить одного ученика |
-| 14 | `PATCH` | `/api/students/:id` | 👨‍🏫 | Обновить ученика |
-| 15 | `DELETE` | `/api/students/:id` | 👨‍🏫 | Удалить ученика |
-| **Invites** |||||
-| 16 | `POST` | `/api/students/:id/invite` | 👨‍🏫 | Сгенерировать invite-ссылку |
-| 17 | `GET` | `/api/invites/:token` | 🌐 | Проверить invite-токен |
-| **Assignments** |||||
-| 18 | `GET` | `/api/assignments` | 🔒 | Список ДЗ с фильтрами по роли и query |
-| 19 | `POST` | `/api/assignments` | 👨‍🏫 | Создать ДЗ |
-| 20 | `GET` | `/api/assignments/:id` | 🔒 | Получить одно ДЗ |
-| 21 | `PATCH` | `/api/assignments/:id` | 👨‍🏫 | Обновить ДЗ или сменить статус |
-| 22 | `DELETE` | `/api/assignments/:id` | 👨‍🏫 | Удалить ДЗ |
-| **Submissions** |||||
-| 23 | `POST` | `/api/assignments/:id/submission` | 👨‍🎓 | Отправить ответ на ДЗ |
-| 24 | `PATCH` | `/api/submissions/:id` | 👨‍🎓 | Обновить ответ |
-| **Files** |||||
-| 25 | `POST` | `/api/files` | 🔒 | Загрузить файл |
-| 26 | `DELETE` | `/api/files/:id` | 🔒 | Удалить файл |
+|               # | Метод    | URL                               | Роль | Описание                              |
+| --------------: | -------- | --------------------------------- | ---- | ------------------------------------- |
+|        **Auth** |          |                                   |      |                                       |
+|               1 | `POST`   | `/api/auth/register-tutor`        | 🌐   | Регистрация репетитора                |
+|               2 | `POST`   | `/api/auth/register-student`      | 🌐   | Регистрация ученика по invite-токену  |
+|               3 | `POST`   | `/api/auth/login`                 | 🌐   | Вход                                  |
+|               4 | `POST`   | `/api/auth/logout`                | 🔒   | Выход                                 |
+|               5 | `GET`    | `/api/auth/me`                    | 🔒   | Текущий пользователь                  |
+|               6 | `POST`   | `/api/auth/forgot-password`       | 🌐   | Запрос восстановления пароля          |
+|               7 | `POST`   | `/api/auth/reset-password`        | 🌐   | Установка нового пароля               |
+|     **Profile** |          |                                   |      |                                       |
+|               8 | `GET`    | `/api/profile`                    | 🔒   | Свой профиль                          |
+|               9 | `PATCH`  | `/api/profile`                    | 🔒   | Обновить профиль                      |
+|              10 | `POST`   | `/api/profile/change-password`    | 🔒   | Сменить пароль                        |
+|    **Students** |          |                                   |      |                                       |
+|              11 | `GET`    | `/api/students`                   | 👨‍🏫   | Список своих учеников                 |
+|              12 | `POST`   | `/api/students`                   | 👨‍🏫   | Создать ученика                       |
+|              13 | `GET`    | `/api/students/:id`               | 👨‍🏫   | Получить одного ученика               |
+|              14 | `PATCH`  | `/api/students/:id`               | 👨‍🏫   | Обновить ученика                      |
+|              15 | `DELETE` | `/api/students/:id`               | 👨‍🏫   | Удалить ученика                       |
+|     **Invites** |          |                                   |      |                                       |
+|              16 | `POST`   | `/api/students/:id/invite`        | 👨‍🏫   | Сгенерировать invite-ссылку           |
+|              17 | `GET`    | `/api/invites/:token`             | 🌐   | Проверить invite-токен                |
+| **Assignments** |          |                                   |      |                                       |
+|              18 | `GET`    | `/api/assignments`                | 🔒   | Список ДЗ с фильтрами по роли и query |
+|              19 | `POST`   | `/api/assignments`                | 👨‍🏫   | Создать ДЗ                            |
+|              20 | `GET`    | `/api/assignments/:id`            | 🔒   | Получить одно ДЗ                      |
+|              21 | `PATCH`  | `/api/assignments/:id`            | 👨‍🏫   | Обновить ДЗ или сменить статус        |
+|              22 | `DELETE` | `/api/assignments/:id`            | 👨‍🏫   | Удалить ДЗ                            |
+| **Submissions** |          |                                   |      |                                       |
+|              23 | `POST`   | `/api/assignments/:id/submission` | 👨‍🎓   | Отправить ответ на ДЗ                 |
+|              24 | `PATCH`  | `/api/submissions/:id`            | 👨‍🎓   | Обновить ответ                        |
+|       **Files** |          |                                   |      |                                       |
+|              25 | `POST`   | `/api/files`                      | 🔒   | Загрузить файл                        |
+|              26 | `DELETE` | `/api/files/:id`                  | 🔒   | Удалить файл                          |
 
 Итого: 26 endpoints.
 
@@ -251,12 +251,12 @@ GET /api/students?page=1&limit=20
 
 ### Validation
 
-| Поле | Правила |
-|---|---|
-| `email` | required, valid email, unique |
-| `password` | required, min 8 chars |
-| `first_name` | required, 2-50 chars |
-| `last_name` | required, 2-50 chars |
+| Поле         | Правила                       |
+| ------------ | ----------------------------- |
+| `email`      | required, valid email, unique |
+| `password`   | required, min 8 chars         |
+| `first_name` | required, 2-50 chars          |
+| `last_name`  | required, 2-50 chars          |
 
 ### Response `201 Created`
 
@@ -281,10 +281,10 @@ GET /api/students?page=1&limit=20
 
 ### Errors
 
-| Статус | Причина |
-|---|---|
-| `400` | Невалидные данные |
-| `409` | Email уже занят |
+| Статус | Причина           |
+| ------ | ----------------- |
+| `400`  | Невалидные данные |
+| `409`  | Email уже занят   |
 
 ---
 
@@ -304,11 +304,11 @@ GET /api/students?page=1&limit=20
 
 ### Validation
 
-| Поле | Правила |
-|---|---|
-| `token` | required, active, not expired |
-| `email` | required, valid email, unique |
-| `password` | required, min 8 chars |
+| Поле       | Правила                       |
+| ---------- | ----------------------------- |
+| `token`    | required, active, not expired |
+| `email`    | required, valid email, unique |
+| `password` | required, min 8 chars         |
 
 ### Response `201 Created`
 
@@ -334,11 +334,11 @@ GET /api/students?page=1&limit=20
 
 ### Errors
 
-| Статус | Причина |
-|---|---|
-| `400` | Невалидные данные |
-| `404` | Invite-токен не найден или истёк |
-| `409` | Email уже занят |
+| Статус | Причина                          |
+| ------ | -------------------------------- |
+| `400`  | Невалидные данные                |
+| `404`  | Invite-токен не найден или истёк |
+| `409`  | Email уже занят                  |
 
 ---
 
@@ -377,10 +377,10 @@ GET /api/students?page=1&limit=20
 
 ### Errors
 
-| Статус | Причина |
-|---|---|
-| `400` | Невалидные данные |
-| `401` | Неверный email или пароль |
+| Статус | Причина                   |
+| ------ | ------------------------- |
+| `400`  | Невалидные данные         |
+| `401`  | Неверный email или пароль |
 
 ---
 
@@ -403,9 +403,9 @@ GET /api/students?page=1&limit=20
 
 ### Errors
 
-| Статус | Причина |
-|---|---|
-| `401` | Пользователь не залогинен |
+| Статус | Причина                   |
+| ------ | ------------------------- |
+| `401`  | Пользователь не залогинен |
 
 ---
 
@@ -428,9 +428,9 @@ GET /api/students?page=1&limit=20
 
 ### Errors
 
-| Статус | Причина |
-|---|---|
-| `401` | Пользователь не залогинен |
+| Статус | Причина                   |
+| ------ | ------------------------- |
+| `401`  | Пользователь не залогинен |
 
 ---
 
@@ -460,9 +460,9 @@ GET /api/students?page=1&limit=20
 
 ### Errors
 
-| Статус | Причина |
-|---|---|
-| `400` | Невалидный email |
+| Статус | Причина          |
+| ------ | ---------------- |
+| `400`  | Невалидный email |
 
 ---
 
@@ -489,10 +489,10 @@ GET /api/students?page=1&limit=20
 
 ### Errors
 
-| Статус | Причина |
-|---|---|
-| `400` | Невалидные данные |
-| `404` | Токен не найден или истёк |
+| Статус | Причина                   |
+| ------ | ------------------------- |
+| `400`  | Невалидные данные         |
+| `404`  | Токен не найден или истёк |
 
 ---
 
@@ -518,9 +518,9 @@ GET /api/students?page=1&limit=20
 
 ### Errors
 
-| Статус | Причина |
-|---|---|
-| `401` | Пользователь не залогинен |
+| Статус | Причина                   |
+| ------ | ------------------------- |
+| `401`  | Пользователь не залогинен |
 
 ---
 
@@ -542,10 +542,10 @@ GET /api/students?page=1&limit=20
 
 ### Validation
 
-| Поле | Правила |
-|---|---|
-| `first_name` | optional, 2-50 chars |
-| `last_name` | optional, 2-50 chars |
+| Поле         | Правила                     |
+| ------------ | --------------------------- |
+| `first_name` | optional, 2-50 chars        |
+| `last_name`  | optional, 2-50 chars        |
 | `avatar_url` | optional, valid URL or null |
 
 ### Response `200 OK`
@@ -564,10 +564,10 @@ GET /api/students?page=1&limit=20
 
 ### Errors
 
-| Статус | Причина |
-|---|---|
-| `400` | Невалидные данные |
-| `401` | Пользователь не залогинен |
+| Статус | Причина                   |
+| ------ | ------------------------- |
+| `400`  | Невалидные данные         |
+| `401`  | Пользователь не залогинен |
 
 ---
 
@@ -594,10 +594,10 @@ GET /api/students?page=1&limit=20
 
 ### Errors
 
-| Статус | Причина |
-|---|---|
-| `400` | Невалидные данные |
-| `401` | Пользователь не залогинен или текущий пароль неверный |
+| Статус | Причина                                               |
+| ------ | ----------------------------------------------------- |
+| `400`  | Невалидные данные                                     |
+| `401`  | Пользователь не залогинен или текущий пароль неверный |
 
 ---
 
@@ -609,12 +609,12 @@ GET /api/students?page=1&limit=20
 
 ### Query parameters
 
-| Параметр | Описание |
-|---|---|
-| `search` | Поиск по имени/фамилии |
-| `subject` | Фильтр по предмету |
-| `page` | Номер страницы |
-| `limit` | Размер страницы |
+| Параметр  | Описание               |
+| --------- | ---------------------- |
+| `search`  | Поиск по имени/фамилии |
+| `subject` | Фильтр по предмету     |
+| `page`    | Номер страницы         |
+| `limit`   | Размер страницы        |
 
 ### Example
 
@@ -657,10 +657,10 @@ GET /api/students?search=Иванов&subject=Математика&page=1&limit=
 
 ### Errors
 
-| Статус | Причина |
-|---|---|
-| `401` | Пользователь не залогинен |
-| `403` | Пользователь не репетитор |
+| Статус | Причина                   |
+| ------ | ------------------------- |
+| `401`  | Пользователь не залогинен |
+| `403`  | Пользователь не репетитор |
 
 ---
 
@@ -683,14 +683,14 @@ GET /api/students?search=Иванов&subject=Математика&page=1&limit=
 
 ### Validation
 
-| Поле | Правила |
-|---|---|
-| `first_name` | required, 2-50 chars |
-| `last_name` | required, 2-50 chars |
-| `class` | optional, integer 1-11 or null |
-| `subject` | required, 2-100 chars |
-| `contact` | optional, max 100 chars or null |
-| `notes` | optional, max 1000 chars or null |
+| Поле         | Правила                          |
+| ------------ | -------------------------------- |
+| `first_name` | required, 2-50 chars             |
+| `last_name`  | required, 2-50 chars             |
+| `class`      | optional, integer 1-11 or null   |
+| `subject`    | required, 2-100 chars            |
+| `contact`    | optional, max 100 chars or null  |
+| `notes`      | optional, max 1000 chars or null |
 
 ### Response `201 Created`
 
@@ -711,11 +711,11 @@ GET /api/students?search=Иванов&subject=Математика&page=1&limit=
 
 ### Errors
 
-| Статус | Причина |
-|---|---|
-| `400` | Невалидные данные |
-| `401` | Пользователь не залогинен |
-| `403` | Пользователь не репетитор |
+| Статус | Причина                   |
+| ------ | ------------------------- |
+| `400`  | Невалидные данные         |
+| `401`  | Пользователь не залогинен |
+| `403`  | Пользователь не репетитор |
 
 ---
 
@@ -752,11 +752,11 @@ GET /api/students?search=Иванов&subject=Математика&page=1&limit=
 
 ### Errors
 
-| Статус | Причина |
-|---|---|
-| `401` | Пользователь не залогинен |
-| `403` | Пользователь не репетитор |
-| `404` | Ученик не найден или принадлежит другому репетитору |
+| Статус | Причина                                             |
+| ------ | --------------------------------------------------- |
+| `401`  | Пользователь не залогинен                           |
+| `403`  | Пользователь не репетитор                           |
+| `404`  | Ученик не найден или принадлежит другому репетитору |
 
 ---
 
@@ -798,12 +798,12 @@ GET /api/students?search=Иванов&subject=Математика&page=1&limit=
 
 ### Errors
 
-| Статус | Причина |
-|---|---|
-| `400` | Невалидные данные |
-| `401` | Пользователь не залогинен |
-| `403` | Пользователь не репетитор |
-| `404` | Ученик не найден или принадлежит другому репетитору |
+| Статус | Причина                                             |
+| ------ | --------------------------------------------------- |
+| `400`  | Невалидные данные                                   |
+| `401`  | Пользователь не залогинен                           |
+| `403`  | Пользователь не репетитор                           |
+| `404`  | Ученик не найден или принадлежит другому репетитору |
 
 ---
 
@@ -823,12 +823,12 @@ GET /api/students?search=Иванов&subject=Математика&page=1&limit=
 
 ### Errors
 
-| Статус | Причина |
-|---|---|
-| `401` | Пользователь не залогинен |
-| `403` | Пользователь не репетитор |
-| `404` | Ученик не найден или принадлежит другому репетитору |
-| `409` | У ученика есть активные ДЗ |
+| Статус | Причина                                             |
+| ------ | --------------------------------------------------- |
+| `401`  | Пользователь не залогинен                           |
+| `403`  | Пользователь не репетитор                           |
+| `404`  | Ученик не найден или принадлежит другому репетитору |
+| `409`  | У ученика есть активные ДЗ                          |
 
 Пример `409`:
 
@@ -870,11 +870,11 @@ GET /api/students?search=Иванов&subject=Математика&page=1&limit=
 
 ### Errors
 
-| Статус | Причина |
-|---|---|
-| `401` | Пользователь не залогинен |
-| `403` | Пользователь не репетитор |
-| `404` | Ученик не найден или принадлежит другому репетитору |
+| Статус | Причина                                             |
+| ------ | --------------------------------------------------- |
+| `401`  | Пользователь не залогинен                           |
+| `403`  | Пользователь не репетитор                           |
+| `404`  | Ученик не найден или принадлежит другому репетитору |
 
 ---
 
@@ -900,9 +900,9 @@ GET /api/students?search=Иванов&subject=Математика&page=1&limit=
 
 ### Errors
 
-| Статус | Причина |
-|---|---|
-| `404` | Токен не найден, истёк или уже использован |
+| Статус | Причина                                    |
+| ------ | ------------------------------------------ |
+| `404`  | Токен не найден, истёк или уже использован |
 
 ---
 
@@ -919,12 +919,12 @@ GET /api/students?search=Иванов&subject=Математика&page=1&limit=
 
 ### Query parameters
 
-| Параметр | Кто может использовать | Описание |
-|---|---|---|
-| `student_id` | Tutor | Фильтр по конкретному ученику |
-| `status` | Tutor / Student | Фильтр по статусу. Можно несколько через запятую |
-| `page` | Tutor / Student | Номер страницы |
-| `limit` | Tutor / Student | Размер страницы |
+| Параметр     | Кто может использовать | Описание                                         |
+| ------------ | ---------------------- | ------------------------------------------------ |
+| `student_id` | Tutor                  | Фильтр по конкретному ученику                    |
+| `status`     | Tutor / Student        | Фильтр по статусу. Можно несколько через запятую |
+| `page`       | Tutor / Student        | Номер страницы                                   |
+| `limit`      | Tutor / Student        | Размер страницы                                  |
 
 ### Examples
 
@@ -971,10 +971,10 @@ GET /api/assignments?status=IN_PROGRESS,UNDER_REVIEW
 
 ### Errors
 
-| Статус | Причина |
-|---|---|
-| `401` | Пользователь не залогинен |
-| `403` | Student использует запрещённый фильтр `student_id` |
+| Статус | Причина                                            |
+| ------ | -------------------------------------------------- |
+| `401`  | Пользователь не залогинен                          |
+| `403`  | Student использует запрещённый фильтр `student_id` |
 
 ---
 
@@ -996,13 +996,13 @@ GET /api/assignments?status=IN_PROGRESS,UNDER_REVIEW
 
 ### Validation
 
-| Поле | Правила |
-|---|---|
-| `student_id` | required, ученик должен принадлежать текущему tutor |
-| `title` | required, 3-200 chars |
-| `description` | required, max 5000 chars |
-| `deadline` | optional, ISODate, должен быть в будущем или null |
-| `file_ids` | optional, массив UUID файлов, загруженных текущим пользователем |
+| Поле          | Правила                                                         |
+| ------------- | --------------------------------------------------------------- |
+| `student_id`  | required, ученик должен принадлежать текущему tutor             |
+| `title`       | required, 3-200 chars                                           |
+| `description` | required, max 5000 chars                                        |
+| `deadline`    | optional, ISODate, должен быть в будущем или null               |
+| `file_ids`    | optional, массив UUID файлов, загруженных текущим пользователем |
 
 ### Response `201 Created`
 
@@ -1040,12 +1040,12 @@ GET /api/assignments?status=IN_PROGRESS,UNDER_REVIEW
 
 ### Errors
 
-| Статус | Причина |
-|---|---|
-| `400` | Невалидные данные |
-| `401` | Пользователь не залогинен |
-| `403` | Пользователь не репетитор |
-| `404` | Ученик не найден или принадлежит другому репетитору |
+| Статус | Причина                                             |
+| ------ | --------------------------------------------------- |
+| `400`  | Невалидные данные                                   |
+| `401`  | Пользователь не залогинен                           |
+| `403`  | Пользователь не репетитор                           |
+| `404`  | Ученик не найден или принадлежит другому репетитору |
 
 ---
 
@@ -1114,10 +1114,10 @@ GET /api/assignments?status=IN_PROGRESS,UNDER_REVIEW
 
 ### Errors
 
-| Статус | Причина |
-|---|---|
-| `401` | Пользователь не залогинен |
-| `404` | ДЗ не найдено или недоступно текущему пользователю |
+| Статус | Причина                                            |
+| ------ | -------------------------------------------------- |
+| `401`  | Пользователь не залогинен                          |
+| `404`  | ДЗ не найдено или недоступно текущему пользователю |
 
 ---
 
@@ -1141,13 +1141,13 @@ GET /api/assignments?status=IN_PROGRESS,UNDER_REVIEW
 
 ### Validation
 
-| Поле | Правила |
-|---|---|
-| `title` | optional, 3-200 chars |
-| `description` | optional, max 5000 chars |
-| `deadline` | optional, ISODate, будущая дата или null |
-| `status` | optional, `IN_PROGRESS`, `UNDER_REVIEW`, `DONE` |
-| `review_comment` | optional, max 2000 chars |
+| Поле             | Правила                                         |
+| ---------------- | ----------------------------------------------- |
+| `title`          | optional, 3-200 chars                           |
+| `description`    | optional, max 5000 chars                        |
+| `deadline`       | optional, ISODate, будущая дата или null        |
+| `status`         | optional, `IN_PROGRESS`, `UNDER_REVIEW`, `DONE` |
+| `review_comment` | optional, max 2000 chars                        |
 
 ### Business rules
 
@@ -1163,13 +1163,13 @@ GET /api/assignments?status=IN_PROGRESS,UNDER_REVIEW
 
 ### Errors
 
-| Статус | Причина |
-|---|---|
-| `400` | Невалидные данные |
-| `401` | Пользователь не залогинен |
-| `403` | Пользователь не репетитор |
-| `404` | ДЗ не найдено или принадлежит другому репетитору |
-| `409` | Статус нельзя поменять по бизнес-правилам |
+| Статус | Причина                                          |
+| ------ | ------------------------------------------------ |
+| `400`  | Невалидные данные                                |
+| `401`  | Пользователь не залогинен                        |
+| `403`  | Пользователь не репетитор                        |
+| `404`  | ДЗ не найдено или принадлежит другому репетитору |
+| `409`  | Статус нельзя поменять по бизнес-правилам        |
 
 ---
 
@@ -1188,11 +1188,11 @@ GET /api/assignments?status=IN_PROGRESS,UNDER_REVIEW
 
 ### Errors
 
-| Статус | Причина |
-|---|---|
-| `401` | Пользователь не залогинен |
-| `403` | Пользователь не репетитор |
-| `404` | ДЗ не найдено или принадлежит другому репетитору |
+| Статус | Причина                                          |
+| ------ | ------------------------------------------------ |
+| `401`  | Пользователь не залогинен                        |
+| `403`  | Пользователь не репетитор                        |
+| `404`  | ДЗ не найдено или принадлежит другому репетитору |
 
 ---
 
@@ -1213,9 +1213,9 @@ GET /api/assignments?status=IN_PROGRESS,UNDER_REVIEW
 
 ### Validation
 
-| Поле | Правила |
-|---|---|
-| `text` | required если нет файлов, max 5000 chars |
+| Поле       | Правила                                                            |
+| ---------- | ------------------------------------------------------------------ |
+| `text`     | required если нет файлов, max 5000 chars                           |
 | `file_ids` | required если нет `text`, массив UUID файлов текущего пользователя |
 
 ### Business rules
@@ -1251,13 +1251,13 @@ GET /api/assignments?status=IN_PROGRESS,UNDER_REVIEW
 
 ### Errors
 
-| Статус | Причина |
-|---|---|
-| `400` | Невалидные данные |
-| `401` | Пользователь не залогинен |
-| `403` | Пользователь не ученик или это не его ДЗ |
-| `404` | ДЗ не найдено |
-| `409` | Статус ДЗ не позволяет отправить ответ |
+| Статус | Причина                                  |
+| ------ | ---------------------------------------- |
+| `400`  | Невалидные данные                        |
+| `401`  | Пользователь не залогинен                |
+| `403`  | Пользователь не ученик или это не его ДЗ |
+| `404`  | ДЗ не найдено                            |
+| `409`  | Статус ДЗ не позволяет отправить ответ   |
 
 ---
 
@@ -1298,13 +1298,13 @@ GET /api/assignments?status=IN_PROGRESS,UNDER_REVIEW
 
 ### Errors
 
-| Статус | Причина |
-|---|---|
-| `400` | Невалидные данные |
-| `401` | Пользователь не залогинен |
-| `403` | Пользователь не ученик или это не его submission |
-| `404` | Submission не найден |
-| `409` | Assignment уже `DONE`, редактировать нельзя |
+| Статус | Причина                                          |
+| ------ | ------------------------------------------------ |
+| `400`  | Невалидные данные                                |
+| `401`  | Пользователь не залогинен                        |
+| `403`  | Пользователь не ученик или это не его submission |
+| `404`  | Submission не найден                             |
+| `409`  | Assignment уже `DONE`, редактировать нельзя      |
 
 ---
 
@@ -1337,9 +1337,9 @@ file: binary
 
 ### Validation
 
-| Правило | Значение |
-|---|---|
-| Max size | 10 MB |
+| Правило       | Значение                                          |
+| ------------- | ------------------------------------------------- |
+| Max size      | 10 MB                                             |
 | Allowed types | `pdf`, `doc`, `docx`, `jpg`, `jpeg`, `png`, `txt` |
 
 ### Notes
@@ -1352,11 +1352,11 @@ file: binary
 
 ### Errors
 
-| Статус | Причина |
-|---|---|
-| `400` | Невалидный файл или тип файла запрещён |
-| `401` | Пользователь не залогинен |
-| `413` | Файл слишком большой |
+| Статус | Причина                                |
+| ------ | -------------------------------------- |
+| `400`  | Невалидный файл или тип файла запрещён |
+| `401`  | Пользователь не залогинен              |
+| `413`  | Файл слишком большой                   |
 
 ---
 
@@ -1375,12 +1375,12 @@ file: binary
 
 ### Errors
 
-| Статус | Причина |
-|---|---|
-| `401` | Пользователь не залогинен |
-| `403` | Файл загрузил другой пользователь |
-| `404` | Файл не найден |
-| `409` | Файл уже используется и его нельзя удалить |
+| Статус | Причина                                    |
+| ------ | ------------------------------------------ |
+| `401`  | Пользователь не залогинен                  |
+| `403`  | Файл загрузил другой пользователь          |
+| `404`  | Файл не найден                             |
+| `409`  | Файл уже используется и его нельзя удалить |
 
 ---
 
@@ -1396,11 +1396,11 @@ export type ISODate = string;
 
 // Roles
 
-export type UserRole = 'TUTOR' | 'STUDENT';
+export type UserRole = "TUTOR" | "STUDENT";
 
 // Assignment statuses
 
-export type AssignmentStatus = 'IN_PROGRESS' | 'UNDER_REVIEW' | 'DONE';
+export type AssignmentStatus = "IN_PROGRESS" | "UNDER_REVIEW" | "DONE";
 
 // User
 
@@ -1475,13 +1475,13 @@ export type Assignment = {
   title: string;
   status: AssignmentStatus;
   deadline: ISODate | null;
-  student: Pick<Student, 'id' | 'first_name' | 'last_name'>;
+  student: Pick<Student, "id" | "first_name" | "last_name">;
   has_submission: boolean;
   created_at: ISODate;
   updated_at: ISODate;
 };
 
-export type AssignmentDetail = Omit<Assignment, 'has_submission'> & {
+export type AssignmentDetail = Omit<Assignment, "has_submission"> & {
   description: string;
   files: FileItem[];
   submission: Submission | null;
@@ -1497,8 +1497,8 @@ export type Invite = {
 
 export type InviteValidation = {
   valid: true;
-  student: Pick<Student, 'first_name' | 'last_name'>;
-  tutor: Pick<User, 'first_name' | 'last_name'>;
+  student: Pick<Student, "first_name" | "last_name">;
+  tutor: Pick<User, "first_name" | "last_name">;
 };
 
 // Pagination
@@ -1528,23 +1528,23 @@ export type ApiError = {
 
 # 13. Маппинг экран → endpoints
 
-| Экран | Endpoints |
-|---|---|
-| Public / Login | `POST /api/auth/login` |
-| Public / Signup Tutor | `POST /api/auth/register-tutor` |
-| Public / Invite Signup | `GET /api/invites/:token` → `POST /api/auth/register-student` |
-| Tutor / Dashboard | `GET /api/auth/me`, `GET /api/assignments?status=UNDER_REVIEW`, `GET /api/students?limit=5` |
-| Tutor / Students List | `GET /api/students` |
-| Tutor / Student Create | `POST /api/students` |
-| Tutor / Student Detail | `GET /api/students/:id`, `GET /api/assignments?student_id=:id`, `POST /api/students/:id/invite` |
-| Tutor / Student Edit | `GET /api/students/:id`, `PATCH /api/students/:id` |
-| Tutor / Assignment Create | `POST /api/files`, `POST /api/assignments` |
-| Tutor / Assignment Detail | `GET /api/assignments/:id`, `PATCH /api/assignments/:id` |
-| Tutor / Assignment Edit | `GET /api/assignments/:id`, `PATCH /api/assignments/:id` |
-| Student / Dashboard | `GET /api/auth/me`, `GET /api/assignments?status=IN_PROGRESS` |
-| Student / Assignments List | `GET /api/assignments` |
+| Экран                       | Endpoints                                                                                                           |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| Public / Login              | `POST /api/auth/login`                                                                                              |
+| Public / Signup Tutor       | `POST /api/auth/register-tutor`                                                                                     |
+| Public / Invite Signup      | `GET /api/invites/:token` → `POST /api/auth/register-student`                                                       |
+| Tutor / Dashboard           | `GET /api/auth/me`, `GET /api/assignments?status=UNDER_REVIEW`, `GET /api/students?limit=5`                         |
+| Tutor / Students List       | `GET /api/students`                                                                                                 |
+| Tutor / Student Create      | `POST /api/students`                                                                                                |
+| Tutor / Student Detail      | `GET /api/students/:id`, `GET /api/assignments?student_id=:id`, `POST /api/students/:id/invite`                     |
+| Tutor / Student Edit        | `GET /api/students/:id`, `PATCH /api/students/:id`                                                                  |
+| Tutor / Assignment Create   | `POST /api/files`, `POST /api/assignments`                                                                          |
+| Tutor / Assignment Detail   | `GET /api/assignments/:id`, `PATCH /api/assignments/:id`                                                            |
+| Tutor / Assignment Edit     | `GET /api/assignments/:id`, `PATCH /api/assignments/:id`                                                            |
+| Student / Dashboard         | `GET /api/auth/me`, `GET /api/assignments?status=IN_PROGRESS`                                                       |
+| Student / Assignments List  | `GET /api/assignments`                                                                                              |
 | Student / Assignment Detail | `GET /api/assignments/:id`, `POST /api/files`, `POST /api/assignments/:id/submission`, `PATCH /api/submissions/:id` |
-| Profile | `GET /api/profile`, `PATCH /api/profile`, `POST /api/profile/change-password` |
+| Profile                     | `GET /api/profile`, `PATCH /api/profile`, `POST /api/profile/change-password`                                       |
 
 ---
 
@@ -1575,6 +1575,6 @@ export type ApiError = {
 
 # 16. История изменений
 
-| Дата | Версия | Изменение |
-|---|---|---|
-| 2026-05-10 | v1 | Начальная версия API design |
+| Дата       | Версия | Изменение                   |
+| ---------- | ------ | --------------------------- |
+| 2026-05-10 | v1     | Начальная версия API design |

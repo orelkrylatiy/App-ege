@@ -1,16 +1,14 @@
-
-
 ## Initial analyzing
 
 1. Discovery
-    - [Цель проекта и проблема](Discovery_stage/user_and_problem.md)
-    - [Роли пользователей](Discovery_stage/roles.md)
-    - [User Stories](Discovery_stage/user_stories.md)
-    - [Приоритизация → MVP](Discovery_stage/mvp_scope.md)
-    - [Глоссарий и сущности](Discovery_stage/Glossary.md)
+   - [Цель проекта и проблема](Discovery_stage/user_and_problem.md)
+   - [Роли пользователей](Discovery_stage/roles.md)
+   - [User Stories](Discovery_stage/user_stories.md)
+   - [Приоритизация → MVP](Discovery_stage/mvp_scope.md)
+   - [Глоссарий и сущности](Discovery_stage/Glossary.md)
 
 2. Design
    - [Sitemap](./design/sitemap.md)
    - [User Flows](./design/user_flows.md)
 
-* [Figma design](https://www.figma.com/design/6r2DGSA5bskPcxw05ItaHm/Brainwave-Lite-platform?node-id=0-1&t=pw1kjy7Tan2UrgK8-1)
+- [Figma design](https://www.figma.com/design/6r2DGSA5bskPcxw05ItaHm/Brainwave-Lite-platform?node-id=0-1&t=pw1kjy7Tan2UrgK8-1)

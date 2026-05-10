@@ -71,19 +71,19 @@
 
 ## Main tags
 
-| Tag | Meaning | Blocking? | Example |
-|---|---|---:|---|
-| no tag | Blocking issue. Requires fix or answer. | Yes | "This can break rendering when students is empty." |
-| `q` | Question. Can be resolved by explanation. Resolver: reviewer. | Yes | "q: Why is this state stored instead of derived?" |
-| `s` | Suggestion. Author decides whether to apply. | No | "s: This helper can be extracted later." |
+| Tag    | Meaning                                                       | Blocking? | Example                                            |
+| ------ | ------------------------------------------------------------- | --------: | -------------------------------------------------- |
+| no tag | Blocking issue. Requires fix or answer.                       |       Yes | "This can break rendering when students is empty." |
+| `q`    | Question. Can be resolved by explanation. Resolver: reviewer. |       Yes | "q: Why is this state stored instead of derived?"  |
+| `s`    | Suggestion. Author decides whether to apply.                  |        No | "s: This helper can be extracted later."           |
 
 ## Additional tags
 
-| Tag | Meaning | Blocking? | Example |
-|---|---|---:|---|
-| `praise` | Positive feedback. | No | "praise: Nice separation between entity and page." |
-| `note` | Context or useful information. | No | "note: We use CSS Modules for component styles." |
-| `nit` | Small style/comment issue. | No | "nit: This name can be shorter." |
-| `thought` | Idea for future iterations. | No | "thought: Later this can become a feature slice." |
+| Tag       | Meaning                        | Blocking? | Example                                            |
+| --------- | ------------------------------ | --------: | -------------------------------------------------- |
+| `praise`  | Positive feedback.             |        No | "praise: Nice separation between entity and page." |
+| `note`    | Context or useful information. |        No | "note: We use CSS Modules for component styles."   |
+| `nit`     | Small style/comment issue.     |        No | "nit: This name can be shorter."                   |
+| `thought` | Idea for future iterations.    |        No | "thought: Later this can become a feature slice."  |
 
 </details>

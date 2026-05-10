@@ -1,41 +1,40 @@
-
 ## 🎨 Имена для всех экранов
 
 ### Public (без логина)
 
-| URL | Figma frame name |
-|---|---|
-| `/` (лендинг) | `Public / Landing` |
-| `/login` | `Public / Login` |
-| `/signup` | `Public / Signup` |
-| `/invite/:token` | `Public / Invite Signup` |
+| URL                | Figma frame name           |
+| ------------------ | -------------------------- |
+| `/` (лендинг)      | `Public / Landing`         |
+| `/login`           | `Public / Login`           |
+| `/signup`          | `Public / Signup`          |
+| `/invite/:token`   | `Public / Invite Signup`   |
 | `/forgot-password` | `Public / Forgot Password` |
-| `*` | `Public / 404` |
+| `*`                | `Public / 404`             |
 
 ### Tutor (репетитор)
 
-| URL | Figma frame name |
-|---|---|
-| `/` (dashboard) | `Tutor / Dashboard` |
-| `/students` | `Tutor / Students List` |
-| `/students/new` | `Tutor / Student Create` |
-| `/students/:id` | `Tutor / Student Detail` |
-| `/students/:id/edit` | `Tutor / Student Edit` |
+| URL                             | Figma frame name            |
+| ------------------------------- | --------------------------- |
+| `/` (dashboard)                 | `Tutor / Dashboard`         |
+| `/students`                     | `Tutor / Students List`     |
+| `/students/new`                 | `Tutor / Student Create`    |
+| `/students/:id`                 | `Tutor / Student Detail`    |
+| `/students/:id/edit`            | `Tutor / Student Edit`      |
 | `/students/:id/assignments/new` | `Tutor / Assignment Create` |
-| `/assignments/:id` | `Tutor / Assignment Detail` |
-| `/assignments/:id/edit` | `Tutor / Assignment Edit` |
-| `/profile` | `Tutor / Profile` |
-| `/profile/edit` | `Tutor / Profile Edit` |
+| `/assignments/:id`              | `Tutor / Assignment Detail` |
+| `/assignments/:id/edit`         | `Tutor / Assignment Edit`   |
+| `/profile`                      | `Tutor / Profile`           |
+| `/profile/edit`                 | `Tutor / Profile Edit`      |
 
 ### Student (ученик)
 
-| URL | Figma frame name |
-|---|---|
-| `/` (dashboard) | `Student / Dashboard` |
-| `/assignments` | `Student / Assignments List` |
+| URL                | Figma frame name              |
+| ------------------ | ----------------------------- |
+| `/` (dashboard)    | `Student / Dashboard`         |
+| `/assignments`     | `Student / Assignments List`  |
 | `/assignments/:id` | `Student / Assignment Detail` |
-| `/profile` | `Student / Profile` |
-| `/profile/edit` | `Student / Profile Edit` |
+| `/profile`         | `Student / Profile`           |
+| `/profile/edit`    | `Student / Profile Edit`      |
 
 ---
 
